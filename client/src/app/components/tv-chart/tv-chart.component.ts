@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { HttpService } from 'src/app/services/http/http.service';
 import {
   widget,
   IChartingLibraryWidget,
@@ -93,6 +94,8 @@ export class TvChartComponent implements OnInit, OnDestroy {
     this._containerId = containerId || this._containerId;
   }
 
+  constructor(private apiHttpService: HttpService) {}
+
   ngOnDestroy() {
     if (this._tvWidget !== null) {
       this._tvWidget.remove();
@@ -120,7 +123,24 @@ export class TvChartComponent implements OnInit, OnDestroy {
       autosize: this._autosize,
     };
 
-    const tvWidget = new widget(widgetOptions);
+    const widgetOptions2: ChartingLibraryWidgetOptions = {
+      symbol: this._symbol,
+      datafeed: this.apiHttpService.getDataFeed(),
+      interval: this._interval,
+      container: this._containerId,
+      library_path: this._libraryPath,
+      locale: this.getLanguageFromURL() || 'en',
+      disabled_features: ['use_localstorage_for_settings'],
+      enabled_features: ['study_templates'],
+      charts_storage_url: this._chartsStorageUrl,
+      charts_storage_api_version: this._chartsStorageApiVersion,
+      client_id: this._clientId,
+      user_id: this._userId,
+      fullscreen: this._fullscreen,
+      autosize: this._autosize,
+    };
+
+    const tvWidget = new widget(widgetOptions2);
     this._tvWidget = tvWidget;
 
     tvWidget.onChartReady(() => {
